@@ -1,46 +1,46 @@
 class Solution {
     public List<String> addOperators(String num, int target) {
-        List<String> ans =new ArrayList<>();
-        if(num.length()==1){
-            if((int)(num.charAt(0)-'a')==target){
-                ans.add(num);
+        List<String> result = new ArrayList<>();
+        if (num == null || num.length() == 0) {
+            return result;
+        }
+        backtrack(result, new StringBuilder(), num, target, 0, 0, 0);
+        return result;
+    }
+
+    private void backtrack(List<String> result, StringBuilder path, String num, int target, int pos, long eval, long multed) {
+        if (pos == num.length()) {
+            if (target == eval) {
+                result.add(path.toString());
             }
-            return ans;
+            return;
         }
-        char[] a=num.toCharArray();
-        get(ans,0,num.length(),a,target,0,0,new StringBuilder(),0);
-        return ans;
-    }
-   
-   static void get(List<String> ans, int start, int n,char[] a, long t, long curr, long last,StringBuilder s,int size){
-    if(start==n){
-        if(curr==t){
-            ans.add(s.toString());
+        
+        for (int i = pos; i < num.length(); i++) {
+            if (i != pos && num.charAt(pos) == '0') break; // Skip numbers with leading zeros
+            long cur = Long.parseLong(num.substring(pos, i + 1));
+            int len = path.length();
+            
+            if (pos == 0) {
+                // First number, we cannot add any operator
+                backtrack(result, path.append(cur), num, target, i + 1, cur, cur);
+                path.setLength(len);
+            } else {
+                // Addition
+                backtrack(result, path.append("+").append(cur), num, target, i + 1, eval + cur, cur);
+                path.setLength(len);
+                
+                // Subtraction
+                backtrack(result, path.append("-").append(cur), num, target, i + 1, eval - cur, -cur);
+                path.setLength(len);
+                
+                // Multiplication
+                backtrack(result, path.append("*").append(cur), num, target, i + 1, eval - multed + multed * cur, multed * cur);
+                path.setLength(len);
+            }
         }
-        return;
     }
-      StringBuilder str=new StringBuilder();
-      for(int i=start;i<n;i++){
-       if(i!=start && a[start]=='0')break;
-        str.append(a[i]);
-        long f=Long.parseLong(str.toString());
-        if(start==0){
-            get(ans,i+1,n,a,t,f,f,str,i+1);
-        }else{
-            s.append('+');
-            s.append(str.toString());
-      get(ans,i+1,n,a,t,curr+f,f,s,size+1+i-start+1);
-            s.deleteCharAt(size);
-            s.insert(size,'-');
-      get(ans,i+1,n,a,t,curr-f,-f,s,size+1+i-start+1);
-            s.deleteCharAt(size);
-            s.insert(size,'*'); 
-      get(ans,i+1,n,a,t,curr+(last*(f-1)),last*f,s,size+1+i-start+1);
-            s.delete(size,s.length());
-      }
-      }
-      return;
-   }
+
     
 
 }
