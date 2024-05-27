@@ -1,0 +1,39 @@
+class Solution {
+    public String shortestPalindrome(String s) {
+        if(s.length() == 0) return s;
+        String temp = s + reverse(s);
+        int ind = lps(temp, s.length());
+        if (ind > s.length()) return s;
+        return reverse(s.substring(ind)) + s;
+    }
+    
+    private String reverse(String s) {
+        StringBuffer sbr = new StringBuffer(s);
+        return sbr.reverse().toString();
+    }
+    
+    private int lps(String s, int len) {
+        int curr = 1;
+        int length = s.length();
+        int[] array = new int[length];
+        int prev = 0;
+        while(curr < length) {
+            if(len == curr) {
+                prev = 0;
+            }
+            if(s.charAt(curr) == s.charAt(prev)) {
+                prev++;
+                array[curr] = prev;
+                curr++;
+            } else {
+                if(prev == 0) {
+                    array[curr] = prev;
+                    curr++;
+                } else {
+                    prev = array[prev - 1];
+                }
+            }
+        }
+        return array[length - 1];
+    }
+}
